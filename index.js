@@ -61,6 +61,26 @@ async function run() {
       const orders = await cursor.toArray()
       res.send(orders)
     })
+    // update order status
+    app.put('/orders/:id', async (req, res) => {
+      const id = req.params.id
+      const updatedOrder = req.body
+      const filter = { _id: ObjectId(id) }
+      const options = { upsert: true }
+      const updateDoc = {
+        $set: {
+          status: updatedOrder.status,
+        },
+      }
+      const result = await ordersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      )
+      console.log('updating', id)
+      res.json(result)
+    })
+
     // delete order
     app.delete('/orders/:id', async (req, res) => {
       const id = req.params.id
