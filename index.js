@@ -24,19 +24,42 @@ async function run() {
     await client.connect()
     const database = client.db('Triply')
     const toursCollection = database.collection('tours')
+    const ordersCollection = database.collection('orders')
 
-    // POST API
+    // POST tours details
     app.post('/tours', async (req, res) => {
       const tour = req.body
       const result = await toursCollection.insertOne(tour)
       res.json(result)
     })
 
-    // GET API
+    // GET tour details
     app.get('/tours', async (req, res) => {
       const cursor = toursCollection.find({})
       const tours = await cursor.toArray()
       res.send(tours)
+    })
+
+    // get single tour
+    app.get('/tours/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: ObjectId(id) }
+      const tour = await toursCollection.findOne(query)
+      res.json(tour)
+    })
+
+    // post order details
+    app.post('/orders', async (req, res) => {
+      const order = req.body
+      const result = await ordersCollection.insertOne(order)
+      res.json(result)
+    })
+
+    // get order details
+    app.get('/orders', async (req, res) => {
+      const cursor = ordersCollection.find({})
+      const orders = await cursor.toArray()
+      res.send(orders)
     })
   } finally {
     // await client.close()
